@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
@@ -19,6 +20,7 @@ class Fruit extends SpriteComponent
   bool _gestureBlocked = false;
   double _elapsedTime = 0;
   late Vector2 _initialPosition;
+  int? _specificLineOffset;
 
   Fruit({
     required this.fruitImage,
@@ -26,15 +28,30 @@ class Fruit extends SpriteComponent
     required this.fruitType,
   });
 
+  List<int> threeLine = [0, 70, -70];
+
   @override
   FutureOr<void> onLoad() async {
     sprite = await Sprite.load(fruitImage);
-    _initialPosition = Vector2(50, game.size.y / 2 + 20);
+
+    int lineOffset;
+    if (_specificLineOffset != null) {
+      lineOffset = _specificLineOffset!;
+    } else {
+      Random rand = Random();
+      lineOffset = threeLine[rand.nextInt(threeLine.length)];
+    }
+
+    _initialPosition = Vector2(50, game.size.y / 2 + 20 + lineOffset);
     position = _initialPosition.clone();
     size = fruitSize;
 
     add(RectangleHitbox());
     return super.onLoad();
+  }
+
+  void setSpecificLine(int lineOffset) {
+    _specificLineOffset = lineOffset;
   }
 
   void dragEndAndMismatch() {
