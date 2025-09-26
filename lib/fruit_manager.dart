@@ -6,12 +6,12 @@ import 'package:ny/fruit.dart';
 class FruitManager extends Component with HasGameReference {
   double fruitRespawnTime = 0;
   double limit = 0;
-  List<int> threeLine = [0, 20, -20];
+  List<int> threeLine = [0, 70, -70];
 
   @override
   void update(double dt) {
     fruitRespawnTime += dt;
-    if (fruitRespawnTime > 0.5 && limit < 200) {
+    if (fruitRespawnTime > 2 && limit < 200) {
       createFruitsOnAllLines();
       fruitRespawnTime = 0;
     }

@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
+import 'package:ny/audio_manager.dart';
 import 'package:ny/basket.dart';
-import 'package:ny/main.dart';
 import 'package:ny/enums.dart';
+import 'package:ny/main.dart';
+import 'package:ny/ny_overlay.dart';
 
 class Fruit extends SpriteComponent
     with HasGameReference, DragCallbacks, CollisionCallbacks {
@@ -21,6 +24,8 @@ class Fruit extends SpriteComponent
   double _elapsedTime = 0;
   late Vector2 _initialPosition;
   int? _specificLineOffset;
+
+  final audio = NYAudioManager();
 
   Fruit({
     required this.fruitImage,
@@ -41,11 +46,9 @@ class Fruit extends SpriteComponent
       Random rand = Random();
       lineOffset = threeLine[rand.nextInt(threeLine.length)];
     }
-
     _initialPosition = Vector2(50, game.size.y / 2 + 20 + lineOffset);
     position = _initialPosition.clone();
     size = fruitSize;
-
     add(RectangleHitbox());
     return super.onLoad();
   }
@@ -136,7 +139,12 @@ class Fruit extends SpriteComponent
       if (fruitType == other.basketType) {
         if (game is MyWorld) {
           (game as MyWorld).increaseScore(10);
+
+          game.showSuccessBorder();
+
+          _playSound(isSucces: true);
         }
+
         _shouldRemove = true;
         other.add(
           ScaleEffect.to(
@@ -150,7 +158,12 @@ class Fruit extends SpriteComponent
       } else {
         if (game is MyWorld) {
           (game as MyWorld).mismatchReduceTime();
+
+          game.showErrorBorder();
+
+          _playSound(isSucces: false);
         }
+
         other.add(
           MoveEffect.by(
             Vector2(10, 0),
@@ -165,6 +178,20 @@ class Fruit extends SpriteComponent
       }
     }
     super.onCollision(intersectionPoints, other);
+  }
+
+  void _playSound({required bool isSucces}) async {
+    try {
+      if (audio.isInitialized) {
+        if (isSucces) {
+          await audio.playSound("assets/audio/success.mp3");
+        } else {
+          await audio.playSound("assets/audio/wrong.mp3");
+        }
+      }
+    } catch (e) {
+      print('Failed to play success sound: $e');
+    }
   }
 
   @override

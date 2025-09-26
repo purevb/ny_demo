@@ -3,9 +3,11 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:ny/audio_manager.dart';
 import 'package:ny/basket.dart';
 import 'package:ny/basket_manager.dart';
 import 'package:ny/fruit_manager.dart';
+import 'package:ny/ny_overlay.dart';
 import 'package:ny/pipe.dart';
 
 void main() {
@@ -20,6 +22,9 @@ class MyWorld extends FlameGame with TapCallbacks, HasCollisionDetection {
   late TextComponent scoreText;
   late TextComponent timerText;
   late TextComponent gameOverText;
+  late ScreenBorderOverlay borderOverlay;
+
+  final audio = NYAudioManager();
 
   int score = 0;
   double gameTime = 60.0;
@@ -27,6 +32,10 @@ class MyWorld extends FlameGame with TapCallbacks, HasCollisionDetection {
 
   @override
   Future<void> onLoad() async {
+    audio.init();
+
+    final borderOverlay = ScreenBorderOverlay();
+    add(borderOverlay);
     pipe = Pipe();
     add(pipe);
 
