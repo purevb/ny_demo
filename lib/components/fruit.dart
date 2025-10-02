@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
@@ -24,9 +23,9 @@ class Fruit extends SpriteComponent
   bool _isRemoving = false;
   bool _gestureBlocked = false;
   double _elapsedTime = 0;
-  late Vector2 _initialPosition;
-  int? _specificLineOffset;
 
+  late Vector2 _initialPosition;
+  late Vector2 grabbedPosition;
   final audio = NYAudioManager();
 
   Fruit({
@@ -35,6 +34,8 @@ class Fruit extends SpriteComponent
     required this.fruitType,
     required this.fruitPositon,
   });
+
+  List<int> threeLine = [0, 70, -70];
 
   @override
   FutureOr<void> onLoad() async {
@@ -46,31 +47,54 @@ class Fruit extends SpriteComponent
     return super.onLoad();
   }
 
-  void setSpecificLine(int lineOffset) {
-    _specificLineOffset = lineOffset;
+  @override
+  void onDragStart(DragStartEvent event) {
+    if (_isRemoving || _gestureBlocked) return;
+
+    grabbedPosition = position.clone();
+    _elapsedTime = 0;
+
+    super.onDragStart(event);
+    _isDragging = true;
+    priority = 10;
   }
 
   void dragEndAndMismatch() {
     _isDragging = false;
     _gestureBlocked = true;
     priority = 0;
+
     position = Vector2(
-      _initialPosition.x + _elapsedTime * 112,
+      grabbedPosition.x + _elapsedTime * defaultGameSpeed,
       _initialPosition.y,
     );
 
-    Future.delayed(Duration(milliseconds: 000), () {
+    _elapsedTime = 0;
+
+    Future.delayed(Duration(milliseconds: 1), () {
       _gestureBlocked = false;
     });
   }
 
   @override
-  void onDragStart(DragStartEvent event) {
+  void onDragCancel(DragCancelEvent event) {
     if (_isRemoving || _gestureBlocked) return;
 
-    super.onDragStart(event);
-    _isDragging = true;
-    priority = 10;
+    super.onDragCancel(event);
+
+    position = Vector2(
+      grabbedPosition.x + _elapsedTime * defaultGameSpeed,
+      _initialPosition.y,
+    );
+
+    _isDragging = false;
+    _elapsedTime = 0;
+    priority = 0;
+
+    _gestureBlocked = true;
+    Future.delayed(Duration(milliseconds: 1), () {
+      _gestureBlocked = false;
+    });
   }
 
   @override
@@ -87,17 +111,7 @@ class Fruit extends SpriteComponent
   @override
   void onDragUpdate(DragUpdateEvent event) {
     if (_isRemoving || _gestureBlocked || !_isDragging) return;
-
     position += event.localDelta;
-  }
-
-  @override
-  void onDragCancel(DragCancelEvent event) {
-    if (_isRemoving || _gestureBlocked) return;
-
-    super.onDragCancel(event);
-    _isDragging = false;
-    priority = 0;
   }
 
   @override
@@ -108,9 +122,13 @@ class Fruit extends SpriteComponent
     }
 
     if (!_isDragging && !_isRemoving && !_gestureBlocked) {
-      _elapsedTime += dt;
       position.x += dt * defaultGameSpeed;
     }
+
+    if (_isDragging) {
+      _elapsedTime += dt;
+    }
+
     super.update(dt);
   }
 
@@ -132,12 +150,9 @@ class Fruit extends SpriteComponent
       if (fruitType == other.basketType) {
         if (game is MyWorld) {
           (game as MyWorld).increaseScore(10);
-
-          game.showSuccessBorder();
-
           _playSound(isSucces: true);
+          game.showSuccessBorder();
         }
-
         _shouldRemove = true;
         other.add(
           ScaleEffect.to(
@@ -151,12 +166,9 @@ class Fruit extends SpriteComponent
       } else {
         if (game is MyWorld) {
           (game as MyWorld).mismatchReduceTime();
-
-          game.showErrorBorder();
-
           _playSound(isSucces: false);
+          game.showErrorBorder();
         }
-
         other.add(
           MoveEffect.by(
             Vector2(10, 0),

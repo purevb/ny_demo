@@ -48,10 +48,11 @@ class MyWorld extends FlameGame with TapCallbacks, HasCollisionDetection {
     basketManager = BasketManager();
     add(basketManager);
 
-    fruitManager = FruitManager();
-    add(fruitManager);
     escalator = EscalatorManager();
     add(escalator);
+
+    fruitManager = FruitManager();
+    add(fruitManager);
 
     borderOverlay = ScreenBorderOverlay();
     add(borderOverlay);

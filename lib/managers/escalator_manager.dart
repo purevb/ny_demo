@@ -2,16 +2,20 @@ import 'dart:async';
 
 import 'package:flame/components.dart';
 import 'package:ny/components/escalator.dart';
+import 'package:ny/components/escalator_circle.dart';
 import 'package:ny/constants.dart';
 import 'package:ny/main.dart';
 
 class EscalatorManager extends Component with HasGameReference<MyWorld> {
   Escalator? lastEscalator;
+  EscalatorCircle? escalatorCircle;
   bool needsNewEscalator = false;
 
   @override
   FutureOr<void> onLoad() {
     priority = 8;
+    escalatorCircle = EscalatorCircle();
+    game.add(escalatorCircle!);
     createInitialEscalators();
     return super.onLoad();
   }

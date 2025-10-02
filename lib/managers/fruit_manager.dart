@@ -22,9 +22,9 @@ class FruitManager extends Component with HasGameReference {
     super.onMount();
 
     fruitsDefaultPosition = [
-      Vector2(50, game.size.y / 2),
-      Vector2(50, game.size.y / 2 + 35),
-      Vector2(50, game.size.y / 2 + 70),
+      Vector2(00, game.size.y / 2),
+      Vector2(00, game.size.y / 2 + 35),
+      Vector2(0, game.size.y / 2 + 70),
     ];
   }
 
@@ -43,9 +43,10 @@ class FruitManager extends Component with HasGameReference {
   }
 
   void createFruitsOnAllLines() {
-    final fruitImg = FruitEnums.values[rand.nextInt(FruitEnums.values.length)];
-
     for (int i = 0; i < 3; i++) {
+      final fruitImg =
+          FruitEnums.values[rand.nextInt(FruitEnums.values.length)];
+
       if (converter) {
         if (i % 2 == 0) {
           final fruit = Fruit(

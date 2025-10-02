@@ -17,4 +17,4 @@ const int midLine = -60;
 const int bottomLine = -40;
 
 final int escalalotorSizeY = 160;
-final Vector2 fruitSize = Vector2(40, 40);
+final Vector2 fruitSize = Vector2(60, 60);
