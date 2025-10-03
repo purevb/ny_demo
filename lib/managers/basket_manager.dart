@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:ny/components/basket.dart';
+import 'package:ny/constants.dart';
 import 'package:ny/enums/enums.dart';
 
 class BasketManager extends Component with HasGameReference {
@@ -25,12 +26,11 @@ class BasketManager extends Component with HasGameReference {
   }
 
   void generateBasket() {
-    Random rand = Random();
     removeAll(children.whereType<Basket>());
 
     for (int i = 0; i < 4; i++) {
-      final fruitType =
-          FruitEnums.values[rand.nextInt(FruitEnums.values.length)];
+      final fruitType = fruitQueue.removeAt(0);
+      if (fruitQueue.isEmpty) return;
 
       final basket = Basket(
         basketSize: Vector2(60, 60),

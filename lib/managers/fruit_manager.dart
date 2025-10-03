@@ -20,7 +20,6 @@ class FruitManager extends Component with HasGameReference {
   @override
   Future<void> onMount() async {
     super.onMount();
-
     fruitsDefaultPosition = [
       Vector2(00, game.size.y / 2),
       Vector2(00, game.size.y / 2 + 35),
@@ -31,7 +30,7 @@ class FruitManager extends Component with HasGameReference {
   @override
   void update(double dt) {
     fruitRespawnTime += dt;
-    if (fruitRespawnTime > 0.5) {
+    if (fruitRespawnTime > fruitRegenarateTiime) {
       converter = !converter;
       createFruitsOnAllLines();
       fruitRespawnTime = 0;
@@ -44,39 +43,41 @@ class FruitManager extends Component with HasGameReference {
 
   void createFruitsOnAllLines() {
     for (int i = 0; i < 3; i++) {
-      final fruitImg =
-          FruitEnums.values[rand.nextInt(FruitEnums.values.length)];
+      bool shouldAdd = false;
 
       if (converter) {
-        if (i % 2 == 0) {
-          final fruit = Fruit(
-            fruitImage: "${fruitImg.name}.png",
-            fruitSize: fruitSize,
-            fruitType: fruitImg,
-            fruitPositon: fruitsDefaultPosition[i],
-          );
-          game.add(fruit);
-        }
+        if (i % 2 == 0) shouldAdd = true;
       } else {
-        if (i % 2 == 1) {
-          final fruit = Fruit(
-            fruitImage: "${fruitImg.name}.png",
-            fruitSize: fruitSize,
-            fruitType: fruitImg,
-            fruitPositon: fruitsDefaultPosition[i],
-          );
-          game.add(fruit);
-        }
+        if (i % 2 == 1) shouldAdd = true;
+      }
+
+      if (shouldAdd && fruitQueue.isNotEmpty) {
+        final fruitQ = fruitQueue.removeAt(0);
+
+        final fruit = Fruit(
+          fruitImage: "${fruitQ.name}.png",
+          fruitSize: fruitSize,
+          fruitType: fruitQ,
+          fruitPositon: fruitsDefaultPosition[i],
+        );
+        game.add(fruit);
       }
     }
   }
 
   void _cleanupFruits() {
-    final fruits = children.whereType<Fruit>().toList();
-
+    final fruits = game.children.query<Fruit>().toList();
+    int removed = 0;
     for (final fruit in fruits) {
       if (fruit.position.x > game.size.x + fruit.size.x) {
         fruit.removeFromParent();
+        removed++;
+      }
+    }
+    if (fruits.length - removed > 20) {
+      final excess = fruits.length - removed - 20;
+      for (int i = 0; i < excess; i++) {
+        fruits[i].removeFromParent();
       }
     }
   }

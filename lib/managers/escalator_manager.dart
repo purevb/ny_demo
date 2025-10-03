@@ -29,8 +29,8 @@ class EscalatorManager extends Component with HasGameReference<MyWorld> {
         (a, b) => a.position.x > b.position.x ? a : b,
       );
 
-      if (rightmostEscalator.position.x + rightmostEscalator.size.x >=
-              game.size.x - 20 &&
+      if (rightmostEscalator.position.x + rightmostEscalator.size.x >
+              game.size.x - 100 &&
           !needsNewEscalator) {
         needsNewEscalator = true;
       }
@@ -40,7 +40,7 @@ class EscalatorManager extends Component with HasGameReference<MyWorld> {
           (a, b) => a.position.x < b.position.x ? a : b,
         );
 
-        if (leftmostEscalator.position.x > 0) {
+        if (leftmostEscalator.position.x > -10) {
           createEscalator();
           needsNewEscalator = false;
         }
@@ -53,7 +53,7 @@ class EscalatorManager extends Component with HasGameReference<MyWorld> {
 
   void createInitialEscalators() {
     final firstEscalator = Escalator(
-      escalatorPosition: Vector2(0, game.size.y / 2 + 10),
+      escalatorPosition: Vector2(-10, game.size.y / 2 + 10),
     );
     game.add(firstEscalator);
     lastEscalator = firstEscalator;

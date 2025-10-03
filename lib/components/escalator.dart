@@ -11,7 +11,7 @@ class Escalator extends SpriteComponent with HasGameReference {
   @override
   FutureOr<void> onLoad() async {
     sprite = await Sprite.load("escalator.png");
-    size = Vector2(game.size.x, 120);
+    size = Vector2(game.size.x + 100, 120);
     return super.onLoad();
   }
 
