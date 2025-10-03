@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:ny/components/basket.dart';
 import 'package:ny/constants.dart';
-import 'package:ny/enums/enums.dart';
 
 class BasketManager extends Component with HasGameReference {
   BasketManager();

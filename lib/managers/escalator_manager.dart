@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:ny/components/escalator.dart';
 import 'package:ny/components/escalator_circle.dart';
-import 'package:ny/constants.dart';
 import 'package:ny/main.dart';
 
 class EscalatorManager extends Component with HasGameReference<MyWorld> {
