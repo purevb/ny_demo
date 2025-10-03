@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:math';
+import 'dart:nativewrappers/_internal/vm/lib/developer.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
@@ -195,7 +195,7 @@ class Fruit extends SpriteComponent
         }
       }
     } catch (e) {
-      print('Failed to play success sound: $e');
+      log('Failed to play success sound: $e');
     }
   }
 

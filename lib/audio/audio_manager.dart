@@ -55,7 +55,6 @@ class NYAudioManager {
   void _performCleanup() {
     if (!_isInitialized) return;
 
-    final now = DateTime.now();
     final keysToRemove = <String>[];
 
     if (_cache.length - keysToRemove.length > maxCacheSize) {

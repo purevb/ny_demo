@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:ny/components/fruit.dart';
 import 'package:ny/constants.dart';
-import 'package:ny/enums/enums.dart';
 
 class FruitManager extends Component with HasGameReference {
   double fruitRespawnTime = 0;
