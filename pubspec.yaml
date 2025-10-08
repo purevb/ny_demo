@@ -38,6 +38,7 @@ dependencies:
   forge2d: ^0.14.2
   floors_map_widget: ^1.0.1
   flutter_soloud: ^3.3.7
+  flame_network_assets: ^0.3.3+16
 
 dev_dependencies:
   flutter_test:

@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
+import 'package:flame_network_assets/flame_network_assets.dart'
+    show FlameNetworkAssets, FlameNetworkImages;
 import 'package:flutter/material.dart';
 import 'package:ny/audio/audio_manager.dart';
 import 'package:ny/components/background.dart';
