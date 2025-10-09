@@ -1,13 +1,13 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:ny/enums/enums.dart';
 
 class Basket extends SpriteComponent with HasGameReference, CollisionCallbacks {
   final Vector2 basketSize;
   final Vector2 basketPosition;
-  final String imgPath;
-  final FruitEnums basketType;
+  final ui.Image imgPath;
+  final String basketType;
 
   Basket({
     required this.basketSize,
@@ -18,7 +18,7 @@ class Basket extends SpriteComponent with HasGameReference, CollisionCallbacks {
 
   @override
   FutureOr<void> onLoad() async {
-    sprite = await Sprite.load(imgPath);
+    sprite = Sprite(imgPath);
     size = basketSize;
     position = basketPosition;
 

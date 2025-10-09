@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
@@ -7,15 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:ny/audio/audio_manager.dart';
 import 'package:ny/components/basket.dart';
 import 'package:ny/constants.dart';
-import 'package:ny/enums/enums.dart';
 import 'package:ny/main.dart';
 import 'package:ny/overlay/ny_overlay.dart';
 
 class Fruit extends SpriteComponent
     with HasGameReference, DragCallbacks, CollisionCallbacks {
-  final String fruitImage;
+  final ui.Image fruitImage;
   final Vector2 fruitSize;
-  final FruitEnums fruitType;
+  final String fruitType;
   final Vector2 fruitPositon;
 
   bool _isDragging = false;
@@ -39,7 +39,7 @@ class Fruit extends SpriteComponent
 
   @override
   FutureOr<void> onLoad() async {
-    sprite = await Sprite.load(fruitImage);
+    sprite = Sprite(fruitImage);
     _initialPosition = fruitPositon;
     position = _initialPosition.clone();
     size = fruitSize;

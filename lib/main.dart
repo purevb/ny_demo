@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -21,6 +22,19 @@ void main() {
 
 class MyWorld extends FlameGame with TapCallbacks, HasCollisionDetection {
   final audio = NYAudioManager();
+  final networkAssets = FlameNetworkImages();
+  // Change 128 to 256 or 512 for larger images
+  List<Map<String, String>> networkImages = [
+    {"apple": "https://cdn-icons-png.flaticon.com/256/415/415733.png"},
+    {"pineapple": "https://cdn-icons-png.flaticon.com/256/8692/8692265.png"},
+    {"grape": "https://cdn-icons-png.flaticon.com/256/5376/5376074.png"},
+    {"banana": "https://cdn-icons-png.flaticon.com/256/831/831896.png"},
+    {"orange": "https://cdn-icons-png.flaticon.com/256/1791/1791312.png"},
+  ];
+
+  // Available sizes on Flaticon:
+  // 32, 64, 128, 256, 512
+  Map<String, ui.Image> cachedImages = {};
 
   late Pipe pipe;
   late FruitManager fruitManager;
@@ -37,9 +51,12 @@ class MyWorld extends FlameGame with TapCallbacks, HasCollisionDetection {
   bool isGameActive = true;
 
   int score = gameStartPoint;
+
   @override
   Future<void> onLoad() async {
     audio.init();
+
+    await backtoCache();
 
     background = Background();
     add(background);
@@ -47,19 +64,29 @@ class MyWorld extends FlameGame with TapCallbacks, HasCollisionDetection {
     pipe = Pipe();
     add(pipe);
 
-    basketManager = BasketManager();
-    add(basketManager);
-
     escalator = EscalatorManager();
     add(escalator);
+    basketManager = BasketManager(cachedImages: cachedImages);
+    add(basketManager);
 
-    fruitManager = FruitManager();
+    fruitManager = FruitManager(cachedImages: cachedImages);
     add(fruitManager);
 
     borderOverlay = ScreenBorderOverlay();
     add(borderOverlay);
 
     await _ui();
+  }
+
+  Future<void> backtoCache() async {
+    for (var item in networkImages) {
+      final fruitName = item.keys.first;
+      final imageUrl = item.values.first;
+
+      final image = await networkAssets.load(imageUrl);
+
+      cachedImages[fruitName] = image;
+    }
   }
 
   Future<void> _ui() async {

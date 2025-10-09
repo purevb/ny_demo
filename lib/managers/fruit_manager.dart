@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui' as ui;
 import 'package:flame/components.dart';
 import 'package:ny/components/fruit.dart';
 import 'package:ny/constants.dart';
 
 class FruitManager extends Component with HasGameReference {
+  Map<String, ui.Image> cachedImages;
+  FruitManager({required this.cachedImages});
+
   double fruitRespawnTime = 0;
   Random rand = Random();
   bool converter = false;
@@ -20,8 +24,8 @@ class FruitManager extends Component with HasGameReference {
   Future<void> onMount() async {
     super.onMount();
     fruitsDefaultPosition = [
-      Vector2(00, game.size.y / 2),
-      Vector2(00, game.size.y / 2 + 35),
+      Vector2(0, game.size.y / 2),
+      Vector2(0, game.size.y / 2 + 35),
       Vector2(0, game.size.y / 2 + 70),
     ];
   }
@@ -41,6 +45,10 @@ class FruitManager extends Component with HasGameReference {
   }
 
   void createFruitsOnAllLines() {
+    if (cachedImages.isEmpty) return;
+
+    final fruitTypes = cachedImages.keys.toList();
+
     for (int i = 0; i < 3; i++) {
       bool shouldAdd = false;
 
@@ -50,13 +58,14 @@ class FruitManager extends Component with HasGameReference {
         if (i % 2 == 1) shouldAdd = true;
       }
 
-      if (shouldAdd && fruitQueue.isNotEmpty) {
-        final fruitQ = fruitQueue.removeAt(0);
+      if (shouldAdd) {
+        final randomType = fruitTypes[rand.nextInt(fruitTypes.length)];
+        final fruitImage = cachedImages[randomType]!;
 
         final fruit = Fruit(
-          fruitImage: "${fruitQ.name}.png",
+          fruitImage: fruitImage,
           fruitSize: fruitSize,
-          fruitType: fruitQ,
+          fruitType: randomType,
           fruitPositon: fruitsDefaultPosition[i],
         );
         game.add(fruit);
@@ -67,12 +76,14 @@ class FruitManager extends Component with HasGameReference {
   void _cleanupFruits() {
     final fruits = game.children.query<Fruit>().toList();
     int removed = 0;
+
     for (final fruit in fruits) {
       if (fruit.position.x > game.size.x + fruit.size.x) {
         fruit.removeFromParent();
         removed++;
       }
     }
+
     if (fruits.length - removed > 20) {
       final excess = fruits.length - removed - 20;
       for (int i = 0; i < excess; i++) {

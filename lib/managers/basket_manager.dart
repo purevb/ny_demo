@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'dart:math';
+import 'dart:ui' as ui;
 
 import 'package:flame/components.dart';
 import 'package:ny/components/basket.dart';
 import 'package:ny/constants.dart';
 
 class BasketManager extends Component with HasGameReference {
-  BasketManager();
+  Map<String, ui.Image> cachedImages;
+
+  BasketManager({required this.cachedImages});
 
   @override
   FutureOr<void> onLoad() async {
@@ -24,17 +28,20 @@ class BasketManager extends Component with HasGameReference {
   }
 
   void generateBasket() {
-    removeAll(children.whereType<Basket>());
+    if (cachedImages.isEmpty) return;
+
+    final fruitTypes = cachedImages.keys.toList();
+    final Random rand = Random();
 
     for (int i = 0; i < 4; i++) {
-      final fruitType = fruitQueue.removeAt(0);
-      if (fruitQueue.isEmpty) return;
+      final randomType = fruitTypes[rand.nextInt(fruitTypes.length)];
+      final fruitImage = cachedImages[randomType]!;
 
       final basket = Basket(
         basketSize: Vector2(60, 60),
         basketPosition: Vector2((i + 1) * (game.size.x / 5), game.size.y - 100),
-        imgPath: "${fruitType.name}.png",
-        basketType: fruitType,
+        imgPath: fruitImage,
+        basketType: randomType,
       );
       add(basket);
     }
