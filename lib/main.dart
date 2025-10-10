@@ -4,8 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
-import 'package:flame_network_assets/flame_network_assets.dart'
-    show FlameNetworkAssets, FlameNetworkImages;
+import 'package:flame_network_assets/flame_network_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:ny/audio/audio_manager.dart';
 import 'package:ny/components/background.dart';
@@ -23,7 +22,37 @@ void main() {
 class MyWorld extends FlameGame with TapCallbacks, HasCollisionDetection {
   final audio = NYAudioManager();
   final networkAssets = FlameNetworkImages();
-  // Change 128 to 256 or 512 for larger images
+
+  late Pipe pipe;
+  late BasketManager basketManager;
+  late Background background;
+  late EscalatorManager escalator;
+  late TextComponent scoreText;
+  late TextComponent timerText;
+  late TextComponent gameOverText;
+  late ScreenBorderOverlay borderOverlay;
+
+  final List<List<String>> patterns = [
+    ["apple", "apple", "grape", "apple"],
+    ["orange", "banana", "apple", "grape"],
+    ["orange", "grape", "apple", "banana"],
+    ["apple", "orange", "banana", "grape"],
+    ["grape", "banana", "apple", "orange"],
+    ["banana", "apple", "orange", "grape"],
+    ["banana", "banana", "banana", "banana"],
+    ["grape", "orange", "apple", "grape"],
+    ["banana", "grape", "orange", "apple"],
+    ["apple", "banana", "orange", "grape"],
+  ];
+  /*
+    niit 5 jims bgaa 
+    1 patternd 4 jims irh bolomjtoi 
+    magadlal tootsoj jimsnuudig generatelh
+
+  
+  
+   */
+
   List<Map<String, String>> networkImages = [
     {"apple": "https://cdn-icons-png.flaticon.com/256/415/415733.png"},
     {"pineapple": "https://cdn-icons-png.flaticon.com/256/8692/8692265.png"},
@@ -32,21 +61,7 @@ class MyWorld extends FlameGame with TapCallbacks, HasCollisionDetection {
     {"orange": "https://cdn-icons-png.flaticon.com/256/1791/1791312.png"},
   ];
 
-  // Available sizes on Flaticon:
-  // 32, 64, 128, 256, 512
   Map<String, ui.Image> cachedImages = {};
-
-  late Pipe pipe;
-  late FruitManager fruitManager;
-  late BasketManager basketManager;
-  late Background background;
-  late EscalatorManager escalator;
-
-  late TextComponent scoreText;
-  late TextComponent timerText;
-  late TextComponent gameOverText;
-  late ScreenBorderOverlay borderOverlay;
-
   double gameTime = totalGameTime;
   bool isGameActive = true;
 
@@ -66,11 +81,11 @@ class MyWorld extends FlameGame with TapCallbacks, HasCollisionDetection {
 
     escalator = EscalatorManager();
     add(escalator);
-    basketManager = BasketManager(cachedImages: cachedImages);
+    basketManager = BasketManager(
+      cachedImages: cachedImages,
+      patterns: patterns,
+    );
     add(basketManager);
-
-    fruitManager = FruitManager(cachedImages: cachedImages);
-    add(fruitManager);
 
     borderOverlay = ScreenBorderOverlay();
     add(borderOverlay);

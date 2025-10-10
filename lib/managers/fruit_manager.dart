@@ -7,7 +7,12 @@ import 'package:ny/constants.dart';
 
 class FruitManager extends Component with HasGameReference {
   Map<String, ui.Image> cachedImages;
-  FruitManager({required this.cachedImages});
+  Map<String, double> probabilities;
+
+  FruitManager({
+    required this.cachedImages,
+    required Map<String, double> probabilites,
+  }) : probabilities = probabilites;
 
   double fruitRespawnTime = 0;
   Random rand = Random();
@@ -38,16 +43,33 @@ class FruitManager extends Component with HasGameReference {
       createFruitsOnAllLines();
       fruitRespawnTime = 0;
     }
-
     _cleanupFruits();
-
     super.update(dt);
+  }
+
+  String _selectFruitByProbability() {
+    if (probabilities.isEmpty) {
+      final fruitTypes = cachedImages.keys.toList();
+      return fruitTypes[rand.nextInt(fruitTypes.length)];
+    }
+
+    double totalProbability = probabilities.values.reduce((a, b) => a + b);
+
+    double randomValue = rand.nextDouble() * totalProbability;
+
+    double cumulative = 0.0;
+    for (var entry in probabilities.entries) {
+      cumulative += entry.value;
+      if (randomValue <= cumulative) {
+        return entry.key;
+      }
+    }
+
+    return probabilities.keys.first;
   }
 
   void createFruitsOnAllLines() {
     if (cachedImages.isEmpty) return;
-
-    final fruitTypes = cachedImages.keys.toList();
 
     for (int i = 0; i < 3; i++) {
       bool shouldAdd = false;
@@ -59,7 +81,7 @@ class FruitManager extends Component with HasGameReference {
       }
 
       if (shouldAdd) {
-        final randomType = fruitTypes[rand.nextInt(fruitTypes.length)];
+        final randomType = _selectFruitByProbability();
         final fruitImage = cachedImages[randomType]!;
 
         final fruit = Fruit(
